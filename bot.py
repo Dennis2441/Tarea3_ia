@@ -1,22 +1,8 @@
-"""
-Tarea #3 - Bot de Telegram interactivo
-Escuela de Ingeniería en Ciencias y Sistemas - USAC
 
-Comandos implementados:
-    /hola
-    /hora
-    /contacto
-    /integrantes
-    /ayuda
-    /menu
-    /calcular <numero1> <operador> <numero2>
-    /tabla <numero>
-    /convertir <cantidad> <unidad_origen> <unidad_destino>
-    /aleatorio <min> <max>
-"""
 
 import os
 import random
+import asyncio
 import logging
 from datetime import datetime
 
@@ -317,6 +303,15 @@ def main():
             "No se encontró la variable de entorno TELEGRAM_TOKEN. "
             "Verifica tu archivo .env"
         )
+
+    # Fix de compatibilidad con Python 3.13+/3.14: asyncio ya no crea
+    # automáticamente un event loop en el hilo principal, así que lo
+    # creamos manualmente antes de que la librería lo necesite.
+    try:
+        asyncio.get_event_loop()
+    except RuntimeError:
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
 
     app = ApplicationBuilder().token(TELEGRAM_TOKEN).build()
 
